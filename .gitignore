@@ -1,0 +1,71 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# --- Virtual envs ---
+.venv/
+.venv*/        # .venv-build 등 변형 venv 포함
+venv/
+env/
+ENV/
+
+# --- 모델 가중치 / 캐시 (대용량, 동봉 금지) ---
+# faster-whisper / huggingface 모델 캐시
+.cache/
+models/
+*.bin
+*.ct2
+*.pt
+*.onnx
+huggingface/
+hf_cache/
+
+# --- 패키징 산출물 (PyInstaller) ---
+*.spec
+!packaging/volo.spec   # 우리 빌드 스펙은 추적
+build/
+dist/
+*.zip
+
+# --- 임시 오디오/출력물 ---
+*.wav
+*.tmp
+tmp/
+temp/
+out/
+output/
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- 작업/비밀 ---
+.env
+*.local

@@ -1,0 +1,65 @@
+name: release
+
+# 태그(v*) 푸시 시 Windows 단일 실행파일(.exe)을 빌드해 GitHub Release 에 올린다.
+# 수동 실행(workflow_dispatch)도 지원.
+#
+# ⚠️ 초안: 빌드 머신에서 검증 필요. 첫 빌드 후 GUI 실행/자막 생성 E2E/LGPL 동봉 파일을 점검할 것.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # Release 에셋 업로드
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # 결정적 모듈은 무거운 의존성 없이 테스트 가능(faster-whisper/ffmpeg 불필요).
+      - run: pip install -e ".[dev]"
+      - run: pytest -q
+
+  build-windows:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install (app + build)
+        run: pip install -e ".[app,build]"
+      - name: Build .exe (onedir)
+        run: pyinstaller packaging/volo.spec
+      - name: Bundle license notices
+        shell: bash
+        run: |
+          cp LICENSE "dist/Volo/LICENSE.txt"
+          cp THIRD_PARTY_NOTICES.md "dist/Volo/THIRD_PARTY_NOTICES.md"
+      - name: Zip (버전명 포함, 최상위 Volo 폴더 유지)
+        shell: pwsh
+        run: Compress-Archive -Path dist/Volo -DestinationPath "Volo-${{ github.ref_name }}-windows.zip"
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Volo-${{ github.ref_name }}-windows
+          path: Volo-*-windows.zip
+      - name: Attach to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Volo ${{ github.ref_name }}
+          generate_release_notes: true   # 직전 태그 대비 커밋/PR 변경요약 자동 생성
+          files: Volo-*-windows.zip
+          body: |
+            ## 설치 (Windows · 설치 불필요)
+            1. 아래 Assets 의 `Volo-${{ github.ref_name }}-windows.zip` 다운로드
+            2. 압축 해제 후 폴더 안 `Volo.exe` 더블클릭
+            3. 최초 실행 시 음성인식 모델(수 GB)이 자동 다운로드됩니다("모델 다운로드 중 … N%").
+            처음엔 모델 `medium` + 짧은 영상으로 테스트를 권장합니다.

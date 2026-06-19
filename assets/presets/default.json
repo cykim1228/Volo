@@ -1,0 +1,8 @@
+{
+  "name": "default",
+  "font_family": "Noto Sans KR",
+  "font_size": 42,
+  "primary_color": "#FFFFFF",
+  "outline_color": "#000000",
+  "position": "bottom"
+}

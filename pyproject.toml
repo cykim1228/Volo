@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "volo"
+version = "0.1.0"
+description = "Volo — 프리미어 프로용 AI 자동 자막 생성 데스크톱 툴 (로컬 faster-whisper, SRT/VTT 내보내기)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Volo" }]
+keywords = ["subtitle", "srt", "vtt", "whisper", "stt", "premiere", "korean"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+
+# 핵심 엔진 실행에 필요한 런타임 의존성.
+# (PySide6 등 UI 의존성은 [project.optional-dependencies] app 으로 분리)
+dependencies = [
+    "faster-whisper>=1.0.0",
+    "imageio-ffmpeg>=0.5.1",
+]
+
+[project.optional-dependencies]
+# 데스크톱 UI (Phase 2). `pip install -e .[app]`
+app = [
+    "PySide6>=6.6.0",
+]
+# 개발/테스트 도구.
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5.0",
+]
+# 배포 패키징(PyInstaller onedir .exe).
+build = [
+    "pyinstaller>=6.0",
+]
+
+[project.scripts]
+# `volo <input.mp4> -o ./out`
+volo = "volo_cli.__main__:main"
+
+[project.gui-scripts]
+# 데스크톱 UI 실행(설치 시): `volo-app`  (또는 `python -m volo_app`)
+volo-app = "volo_app.__main__:main"
+
+[tool.setuptools]
+# 명시적 패키지 목록(엔진 + CLI + 앱). 엔진은 UI 무관 코어.
+packages = ["volo_engine", "volo_cli", "volo_app"]
+
+[tool.setuptools.package-data]
+# 스타일 프리셋/글로서리 샘플 등 동봉 데이터.
+volo_engine = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# 무거운 의존성 없이도 결정적 모듈(models/segment/export) 테스트가 돌아가야 한다.
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
