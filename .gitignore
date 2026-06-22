@@ -26,8 +26,9 @@ wheels/
 htmlcov/
 
 # --- Virtual envs ---
+# .venv, .venv-build 등 변형 포함 (gitignore 는 줄 끝 주석 미지원 → 주석은 독립 줄)
 .venv/
-.venv*/        # .venv-build 등 변형 venv 포함
+.venv*/
 venv/
 env/
 ENV/
@@ -44,12 +45,13 @@ huggingface/
 hf_cache/
 
 # --- 패키징 산출물 (PyInstaller) ---
-*.spec
-!packaging/*.spec      # 우리 빌드 스펙(onedir/onefile) 추적
+# 빌드 스펙(packaging/*.spec)은 소스이므로 추적한다. 빌드 결과물만 무시.
+# (이전엔 *.spec 로 통째 무시 + 인라인 주석 negation 이 깨져 spec 이 커밋 안 돼 릴리스 빌드가 실패했음)
 build/
 dist/
 *.zip
-*.exe                  # 빌드 산출 exe (배포는 Releases 로)
+# 빌드 산출 exe (배포는 Releases 로)
+*.exe
 
 # --- 임시 오디오/출력물 ---
 *.wav
