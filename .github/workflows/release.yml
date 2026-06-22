@@ -35,7 +35,16 @@ jobs:
           python-version: "3.11"
       - name: Install (app + build)
         run: pip install -e ".[app,build]"
-      - name: Build .exe (onedir)
+
+      # 1) onefile: 단일 .exe (파일 1개만 받아서 바로 실행)
+      - name: Build single .exe (onefile)
+        run: pyinstaller packaging/volo-onefile.spec
+      - name: Rename single exe (버전명)
+        shell: pwsh
+        run: Move-Item dist/Volo.exe "Volo-${{ github.ref_name }}-windows.exe"
+
+      # 2) onedir: 폴더형 .zip (기동 빠름·백신 오탐 적음)
+      - name: Build folder build (onedir)
         run: pyinstaller packaging/volo.spec
       - name: Bundle license notices
         shell: bash
@@ -45,21 +54,33 @@ jobs:
       - name: Zip (버전명 포함, 최상위 Volo 폴더 유지)
         shell: pwsh
         run: Compress-Archive -Path dist/Volo -DestinationPath "Volo-${{ github.ref_name }}-windows.zip"
-      - name: Upload artifact
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Volo-${{ github.ref_name }}-windows
-          path: Volo-*-windows.zip
+          path: |
+            Volo-*-windows.exe
+            Volo-*-windows.zip
       - name: Attach to Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           name: Volo ${{ github.ref_name }}
           generate_release_notes: true   # 직전 태그 대비 커밋/PR 변경요약 자동 생성
-          files: Volo-*-windows.zip
+          files: |
+            Volo-*-windows.exe
+            Volo-*-windows.zip
           body: |
-            ## 설치 (Windows · 설치 불필요)
-            1. 아래 Assets 의 `Volo-${{ github.ref_name }}-windows.zip` 다운로드
-            2. 압축 해제 후 폴더 안 `Volo.exe` 더블클릭
-            3. 최초 실행 시 음성인식 모델(수 GB)이 자동 다운로드됩니다("모델 다운로드 중 … N%").
-            처음엔 모델 `medium` + 짧은 영상으로 테스트를 권장합니다.
+            ## 다운로드 · 설치 (Windows · 설치 불필요)
+
+            아래 **Assets** 에서 받으세요 (둘 중 하나):
+
+            - **`Volo-${{ github.ref_name }}-windows.exe`** — 파일 1개. 받아서 **더블클릭**.
+              (첫 실행은 임시 추출로 다소 느릴 수 있습니다 / 백신 경고 시 "추가 정보 → 실행")
+            - **`Volo-${{ github.ref_name }}-windows.zip`** — 압축 해제 후 폴더 안 `Volo.exe` 실행.
+              (기동이 빠르고 백신 오탐이 적습니다)
+
+            최초 실행 시 음성인식 모델(수 GB)이 자동 다운로드됩니다("모델 다운로드 중 … N%").
+            처음엔 모델 `medium` + 짧은 영상으로 테스트를 권장합니다. 라이선스 고지는 저장소의
+            LICENSE / THIRD_PARTY_NOTICES.md 를 참고하세요.

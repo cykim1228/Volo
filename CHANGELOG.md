@@ -12,6 +12,16 @@
 - **배치 처리** — 여러 영상을 한 번에 큐로 처리.
 - **화자 분리(diarization)** — 화자별 라벨링/분할.
 
+## [0.2.0] - 2026-06-22
+
+### 추가됨
+- **단일 실행파일(onefile) 배포** — `Volo.exe` 파일 하나만 받아 더블클릭으로 실행(`packaging/volo-onefile.spec`). 모든 의존성(파이썬·Qt·ctranslate2·ffmpeg 등)을 exe 하나에 동봉. (첫 실행은 임시 추출로 다소 느릴 수 있음)
+- **릴리스 자산 2종 자동 첨부** — 태그 푸시 시 CI 가 단일 `.exe`(onefile)와 폴더형 `.zip`(onedir)을 **둘 다** 빌드해 GitHub Release 에 첨부. 버전별 파일명(`Volo-<버전>-windows.exe` / `.zip`) + 릴리스 노트·설치 안내 자동 생성.
+
+### 변경됨
+- README 다운로드 안내에 **단일 exe vs zip** 선택 옵션 추가(GitHub 자동 "Source code" 묶음과 구분 설명).
+- `.gitignore` 보정 — `!packaging/*.spec`(onedir/onefile 스펙 추적), `*.exe`(빌드 산출물 무시).
+
 ## [0.1.0] - 2026-06-19
 
 첫 공개 릴리스(MVP). 영상 하나를 넣으면 타임코드까지 맞춰진 한국어 자막(SRT/VTT)을 만들어
@@ -35,5 +45,6 @@
 - ffmpeg 는 시스템 PATH 우선, 없으면 `imageio-ffmpeg` 번들 바이너리로 자동 폴백(수동 설치 불필요).
 - Volo 본체는 MIT. 번들 배포 시 PySide6(LGPL-3.0)·FFmpeg(LGPL/GPL) 고지는 `THIRD_PARTY_NOTICES.md` 참조.
 
-[Unreleased]: https://github.com/<OWNER>/<REPO>/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/<OWNER>/<REPO>/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/<OWNER>/<REPO>/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/<OWNER>/<REPO>/releases/tag/v0.1.0

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "volo"
-version = "0.1.0"
+version = "0.2.0"
 description = "Volo — 프리미어 프로용 AI 자동 자막 생성 데스크톱 툴 (로컬 faster-whisper, SRT/VTT 내보내기)"
 readme = "README.md"
 requires-python = ">=3.11"
